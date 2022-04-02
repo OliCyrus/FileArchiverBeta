@@ -58,26 +58,24 @@ namespace FileArchiverTest
                     string[] sortedFiles = GetFilesSortedByCreationTime(pathsIterator, days);
                     if (sortedFiles != null)
                     {
-                        using (FileStream zipFile = File.Open(String.Concat(@"D:\", pathsIterator.Substring(2).Replace("AntaresVision", "").Replace(@"\", ""), "_", DateTime.Now.ToString("dd.MM.yyyy_"), ".zip"), FileMode.Create))
+                        using (FileStream zipFile = File.Open(String.Concat(@"D:\", pathsIterator.Substring(2).Replace("AntaresVision", "").Replace(@"\", ""), "_", DateTime.Now.ToString("dd.MM.yyyy"), ".zip"), FileMode.Create))
                         {
                             using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Update))
                             {
                                 foreach (string str in sortedFiles)
                                 {
                                     FileInfo fi = new FileInfo(str);
-                                    StringBuilder stringBuilder = new StringBuilder();
-                                    stringBuilder.
                                     archive.CreateEntryFromFile(fi.FullName, fi.Name);
                                 }
                             }
                         }
                         File.AppendAllText("log.txt", String.Concat(DateTime.Now.ToString(), " - Created archive for directory ", pathsIterator) + Environment.NewLine);
-                        //foreach (string str in sortedFiles)
-                        //{
-                        //    FileInfo fi = new FileInfo(str);
-                        //    fi.Delete();
-                        //}
-                        //File.AppendAllText("log.txt", String.Concat(DateTime.Now.ToString(), " - Removed archived files from directory ", pathsIterator) + Environment.NewLine);
+                        foreach (string str in sortedFiles)
+                        {
+                            FileInfo fi = new FileInfo(str);
+                            fi.Delete();
+                        }
+                        File.AppendAllText("log.txt", String.Concat(DateTime.Now.ToString(), " - Removed archived files from directory ", pathsIterator) + Environment.NewLine);
                     }
                         
                     
@@ -97,8 +95,6 @@ namespace FileArchiverTest
             {
                 File.AppendAllText("log.txt", e.Source + Environment.NewLine);
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine);
-                Environment.FailFast(String.Format("Out of Memory: {0}",
-                                            e.Message));
             }
             Console.WriteLine("See log.txt for more details");
             Console.ReadKey();
