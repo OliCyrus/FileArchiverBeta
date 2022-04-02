@@ -53,19 +53,20 @@ namespace FileArchiverTest
         {
             try
             {
-                foreach(string pathsIterator in foldersPaths)
+                foreach (string pathsIterator in foldersPaths)
                 {
                     string[] sortedFiles = GetFilesSortedByCreationTime(pathsIterator, days);
                     if (sortedFiles != null)
                     {
-                        using (FileStream zipFile = File.Open(String.Concat(@"D:\", pathsIterator.Substring(2).Replace("AntaresVision", "").Replace(@"\", ""), "_", DateTime.Now.ToString("dd.MM.yyyy"), ".zip"), FileMode.Create))
+                        Console.WriteLine(String.Concat("Found ", sortedFiles.Length, " specified files in derectory ", pathsIterator));
+                        using (FileStream zipFile = File.Open(String.Concat(archivePath, pathsIterator.Substring(2).Replace("AntaresVision", "").Replace(@"\", ""), "_", DateTime.Now.ToString("dd.MM.yyyy_HH_mm"), ".zip"), FileMode.Create))
                         {
-                            using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Update))
+                            using (ZipArchive archive = new ZipArchive(zipFile, ZipArchiveMode.Create))
                             {
                                 foreach (string str in sortedFiles)
                                 {
                                     FileInfo fi = new FileInfo(str);
-                                    archive.CreateEntryFromFile(fi.FullName, fi.Name);
+                                    archive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
                                 }
                             }
                         }
@@ -77,10 +78,10 @@ namespace FileArchiverTest
                         }
                         File.AppendAllText("log.txt", String.Concat(DateTime.Now.ToString(), " - Removed archived files from directory ", pathsIterator) + Environment.NewLine);
                     }
-                        
-                    
+
+
                 }
-                
+
             }
             catch (IOException e)
             {
